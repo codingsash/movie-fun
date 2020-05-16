@@ -1,14 +1,7 @@
 package org.superbiz.moviefun.albums;
 
-import org.apache.tika.io.IOUtils;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.superbiz.moviefun.blobstore.Blob;
-import org.superbiz.moviefun.blobstore.BlobStore;
+import static java.lang.String.format;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +9,28 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.format;
-import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import org.apache.tika.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.superbiz.moviefun.blobstore.Blob;
+import org.superbiz.moviefun.blobstore.BlobStore;
 
 @Controller
 @RequestMapping("/albums")
 public class AlbumsController {
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final AlbumsBean albumsBean;
     private final BlobStore blobStore;
@@ -46,14 +55,14 @@ public class AlbumsController {
 
     @PostMapping("/{albumId}/cover")
     public String uploadCover(@PathVariable Long albumId, @RequestParam("file") MultipartFile uploadedFile) {
-        System.out.println("Uploading cover for album with id " + albumId);
+    	logger.debug("Uploading cover for album with id {}", albumId);
 
         if (uploadedFile.getSize() > 0) {
             try {
                 tryToUploadCover(albumId, uploadedFile);
 
             } catch (IOException e) {
-                e.printStackTrace();
+            	logger.error("There was an error while uploading album cover", e);
             }
         }
 

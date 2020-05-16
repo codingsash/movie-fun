@@ -16,18 +16,27 @@
  */
 package org.superbiz.moviefun.movies;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class MoviesBean {
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,8 +47,7 @@ public class MoviesBean {
 
     @Transactional
     public void addMovie(Movie movie) {
-        System.err.println("Creating movie with title " + movie.getTitle() +
-            ", and year " + movie.getYear());
+        logger.debug("Creating movie with title {} and year {}" , movie.getTitle() , movie.getYear() );
 
         entityManager.persist(movie);
     }
